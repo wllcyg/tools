@@ -249,16 +249,29 @@ function clearReceiveData() {
   message.info("已清空");
 }
 
-// 保存日志
+// 保存日志到默认下载目录
 function saveLog() {
-  const blob = new Blob([receiveData.value], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `serial-log-${Date.now()}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
-  message.success("日志已保存");
+  if (!receiveData.value.trim()) {
+    message.warning("没有数据可保存");
+    return;
+  }
+
+  try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const fileName = `serial-log-${timestamp}.txt`;
+    
+    const blob = new Blob([receiveData.value], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    message.success(`日志已保存: ${fileName}`);
+  } catch (error) {
+    message.error(`保存失败: ${error}`);
+  }
 }
 
 // 生命周期
