@@ -147,7 +147,7 @@ async function disconnectPort() {
     // 停止读取
     stopReading();
 
-    await invoke("close_serial_port", { port_name: selectedPort.value });
+    await invoke("close_serial_port", { portName: selectedPort.value });
     isConnected.value = false;
     message.success("串口已断开");
   } catch (error) {
@@ -169,9 +169,9 @@ async function sendSerialData() {
 
   try {
     const result = await invoke<string>("write_serial_data", {
-      port_name: selectedPort.value,
+      portName: selectedPort.value,
       data: sendData.value,
-      is_hex: isHexMode.value,
+      isHex: isHexMode.value,
     });
 
     // 更新发送字节数
@@ -196,8 +196,8 @@ function startReading() {
 
     try {
       const data = await invoke<number[]>("read_serial_data", {
-        port_name: selectedPort.value,
-        timeout_ms: 50,
+        portName: selectedPort.value,
+        timeoutMs: 50,
       });
 
       if (data.length > 0) {
@@ -269,7 +269,7 @@ onMounted(() => {
 onUnmounted(() => {
   stopReading();
   if (isConnected.value && selectedPort.value) {
-    invoke("close_serial_port", { port_name: selectedPort.value });
+    invoke("close_serial_port", { portName: selectedPort.value });
   }
 });
 </script>
