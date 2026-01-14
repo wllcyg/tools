@@ -88,7 +88,25 @@ const parityOptions = [
 async function refreshPorts() {
   try {
     serialPorts.value = await invoke<SerialPortInfo[]>("list_serial_ports");
-    message.success(`找到 ${serialPorts.value.length} 个串口`);
+    
+    // 统计物理串口和虚拟串口数量
+    const physicalPorts = serialPorts.value.filter(p => !p.port_name.startsWith('VIRTUAL-'));
+    const virtualPorts = serialPorts.value.filter(p => p.port_name.startsWith('VIRTUAL-'));
+    
+    if (physicalPorts.length === 0 && virtualPorts.length > 0) {
+      message.warning(
+        `未检测到物理串口，仅找到 ${virtualPorts.length} 个虚拟串口。\n` +
+        `如需使用真实串口，请确认：\n` +
+        `1. USB转串口设备已插入\n` +
+        `2. 驱动程序已正确安装\n` +
+        `3. 在设备管理器中可见串口设备`,
+        { duration: 5000 }
+      );
+    } else if (physicalPorts.length > 0) {
+      message.success(`找到 ${physicalPorts.length} 个物理串口，${virtualPorts.length} 个虚拟串口`);
+    } else {
+      message.success(`找到 ${serialPorts.value.length} 个串口`);
+    }
   } catch (error) {
     message.error(`刷新串口失败: ${error}`);
   }
@@ -293,6 +311,9 @@ onUnmounted(() => {
                   </template>
                 </n-button>
               </n-space>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px;">
+                💡 提示：VIRTUAL 开头的是虚拟串口，用于无设备测试
+              </div>
             </div>
 
             <!-- 波特率 -->

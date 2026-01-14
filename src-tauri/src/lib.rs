@@ -36,30 +36,41 @@ fn list_serial_ports() -> Result<Vec<SerialPortInfo>, String> {
     let mut port_list: Vec<SerialPortInfo> = vec![];
     
     // 添加真实串口
-    if let Ok(ports) = serialport::available_ports() {
-        port_list.extend(
-            ports.iter().map(|p| {
-                let port_type = match &p.port_type {
-                    SerialPortType::UsbPort(info) => {
-                        // 显示 USB 设备详细信息
-                        if let Some(product) = &info.product {
-                            format!("USB: {}", product)
-                        } else if let Some(manufacturer) = &info.manufacturer {
-                            format!("USB: {}", manufacturer)
-                        } else {
-                            "USB Device".to_string()
+    match serialport::available_ports() {
+        Ok(ports) => {
+            println!("[DEBUG] 检测到 {} 个物理串口", ports.len());
+            for p in &ports {
+                println!("[DEBUG] 串口: {} - {:?}", p.port_name, p.port_type);
+            }
+            
+            port_list.extend(
+                ports.iter().map(|p| {
+                    let port_type = match &p.port_type {
+                        SerialPortType::UsbPort(info) => {
+                            // 显示 USB 设备详细信息
+                            if let Some(product) = &info.product {
+                                format!("USB: {}", product)
+                            } else if let Some(manufacturer) = &info.manufacturer {
+                                format!("USB: {}", manufacturer)
+                            } else {
+                                "USB Device".to_string()
+                            }
                         }
+                        SerialPortType::PciPort => "PCI Port".to_string(),
+                        SerialPortType::BluetoothPort => "Bluetooth".to_string(),
+                        SerialPortType::Unknown => "Unknown".to_string(),
+                    };
+                    SerialPortInfo {
+                        port_name: p.port_name.clone(),
+                        port_type,
                     }
-                    SerialPortType::PciPort => "PCI Port".to_string(),
-                    SerialPortType::BluetoothPort => "Bluetooth".to_string(),
-                    SerialPortType::Unknown => "Unknown".to_string(),
-                };
-                SerialPortInfo {
-                    port_name: p.port_name.clone(),
-                    port_type,
-                }
-            })
-        );
+                })
+            );
+        }
+        Err(e) => {
+            println!("[WARNING] 无法枚举物理串口: {}", e);
+            // 在 Windows 上可能是权限问题或没有驱动
+        }
     }
     
     // 添加虚拟串口
