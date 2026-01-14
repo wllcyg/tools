@@ -1,7 +1,35 @@
-# Tauri + Vue + TypeScript
+# 串口调试助手
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+一款基于 Tauri + Vue 3 开发的桌面端串口调试工具，支持真实串口和虚拟串口模拟。
 
-## Recommended IDE Setup
+## ✨ 特性
+
+- 🔌 支持真实串口通信（COM1-COM256）
+- 🎮 内置 3 种虚拟串口模式（Echo、Reply、Random）
+- 📊 数据支持文本和 HEX 两种格式
+- 🎨 玻璃拟态风格界面
+- 💾 支持日志保存和数据统计
+- 🪟 完美支持 Windows 系统
+
+## 技术栈
+
+- **前端**: Vue 3 + TypeScript + Vite + Naive UI
+- **后端**: Rust + Tauri 2
+- **串口**: serialport 4.5
+
+## 开发环境
+
+```bash
+# 安装依赖
+npm install
+
+# 开发模式
+npm run tauri dev
+
+# 构建应用
+npm run tauri build
+```
+
+## 推荐 IDE
 
 - [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
